@@ -1,0 +1,190 @@
+
+CREATE DATABASE IF NOT EXISTS BD_FOVIPOL;
+USE BD_FOVIPOL;
+
+CREATE TABLE IF NOT EXISTS SOCIO (
+    codigo CHAR(14),
+    ape_paterno VARCHAR(60),
+    ape_materno VARCHAR(60),
+    nombres VARCHAR(60),
+    nombres_completos VARCHAR(180),
+    tipo_documento VARCHAR(15),
+    numero_documento VARCHAR(15),
+    correo VARCHAR(160),
+    usuario_crea VARCHAR(15),
+    fecha_crea DATETIME,
+    flag TINYINT
+);
+
+CREATE TABLE IF NOT EXISTS SIMULACION (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    entidad_pago INT,
+    codigo_socio CHAR(14),
+    id_seguro INT,
+    renumeracion DECIMAL(6,2),
+    descuento_oficial DECIMAL(6,2),
+    descuento_personal DECIMAL(6,2),
+    bonificacion DECIMAL(6,2),
+    monto DECIMAL(6,2),
+    fecha_crea DATETIME,
+    usuario_crea VARCHAR(15),
+    flag TINYINT
+);
+
+CREATE TABLE IF NOT EXISTS SEGURO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(40),
+    tasa DECIMAL(6,3)
+);
+
+CREATE TABLE IF NOT EXISTS CREDITO (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_simulacion INT,
+    operacion VARCHAR(80),
+    monto_solicitado DECIMAL(20,2),
+    tea DECIMAL,
+    plazo INT,
+    estado INT,
+    fecha_crea DATETIME,
+    usuario_crea VARCHAR(15),
+    ip VARCHAR(80)
+);
+
+CREATE TABLE IF NOT EXISTS CUOTAS (
+    id_credito INT,
+    numero_cuota INT,
+    saldo_inicial DECIMAL,
+    amortizacion DECIMAL,
+    interes DECIMAL(14,2),
+    seguro DECIMAL(14,2),
+    monto_cuota DECIMAL(14,2),
+    fecha_vencimiento DATETIME,
+    estado INT,
+    fecha_crea DATETIME,
+    usuario_crea VARCHAR(80),
+    flag TINYINT,
+    PRIMARY KEY (id_credito, numero_cuota)
+);
+
+INSERT INTO SEGURO (nombre, tasa) VALUES
+('Desgravamen - MAFRE', 0.356),
+('Desgravamen - RIMAC', 0.334),
+('Desgravamen - PACIFICO', 0.390),
+('Desgravamen - INTERSEGURO', 0.421);
+
+
+
+DELIMITER //
+CREATE PROCEDURE InsertSocio(
+    IN p_codigo CHAR(14),
+    IN p_ape_paterno VARCHAR(60),
+    IN p_ape_materno VARCHAR(60),
+    IN p_nombres VARCHAR(60),
+    IN p_nombres_completos VARCHAR(180),
+    IN p_tipo_documento VARCHAR(15),
+    IN p_numero_documento VARCHAR(15),
+    IN p_correo VARCHAR(160),
+    IN p_usuario_crea VARCHAR(15),
+    IN p_fecha_crea DATETIME,
+    IN p_flag TINYINT
+)
+BEGIN
+    INSERT INTO SOCIO(
+        codigo,
+        ape_paterno,
+        ape_materno,
+        nombres,
+        nombres_completos,
+        tipo_documento,
+        numero_documento,
+        correo,
+        usuario_crea,
+        fecha_crea,
+        flag
+    )
+    VALUES (
+        p_codigo,
+        p_ape_paterno,
+        p_ape_materno,
+        p_nombres,
+        p_nombres_completos,
+        p_tipo_documento,
+        p_numero_documento,
+        p_correo,
+        p_usuario_crea,
+        p_fecha_crea,
+        p_flag
+    );
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE ListarSocios()
+BEGIN
+    SELECT * FROM socio;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE ListarSeguros()
+BEGIN
+    SELECT * FROM SEGURO;
+END //
+DELIMITER ;
+
+
+
+DELIMITER //
+CREATE PROCEDURE GuardarSimulacion(
+    IN p_entidad_pago INT,
+    IN p_codigo_socio CHAR(14),
+    IN p_id_seguro INT,
+    IN p_renumeracion DECIMAL(6,2),
+    IN p_descuento_oficial DECIMAL(6,2),
+    IN p_descuento_personal DECIMAL(6,2),
+    IN p_bonificacion DECIMAL(6,2),
+    IN p_monto DECIMAL(6,2),
+    IN p_fecha_crea DATETIME,
+    IN p_usuario_crea VARCHAR(15),
+    IN p_flag TINYINT
+)
+BEGIN
+    INSERT INTO SIMULACION(
+        entidad_pago,
+        codigo_socio,
+        id_seguro,
+        renumeracion,
+        descuento_oficial,
+        descuento_personal,
+        bonificacion,
+        monto,
+        fecha_crea,
+        usuario_crea,
+        flag
+    )
+    VALUES(
+        p_entidad_pago,
+        p_codigo_socio,
+        p_id_seguro,
+        p_renumeracion,
+        p_descuento_oficial,
+        p_descuento_personal,
+        p_bonificacion,
+        p_monto,
+        p_fecha_crea,
+        p_usuario_crea,
+        p_flag
+    );
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE ListarSimulaciones()
+BEGIN
+    SELECT * FROM SIMULACION;
+END //
+DELIMITER ;
+
+
+
